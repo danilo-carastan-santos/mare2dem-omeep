@@ -1,0 +1,3 @@
+April 2009, Kerry Key:
+
+I modified the routine ./SRC/get_perm_c  to use the Metis library for computing the column permutations for reordering the matrix.
