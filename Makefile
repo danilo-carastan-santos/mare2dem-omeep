@@ -31,12 +31,15 @@ CLUSTER_LC := $(shell echo $(CLUSTER) | tr A-Z a-z)
 # 
 # macpro with Intel Compilers:
 # 
-ifeq "$(CLUSTER_LC)" "macpro"
-   FC      = /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpif90
-   FFLAGS  = -O2 -m64  -fc=/opt/intel/compilers_and_libraries/linux/bin/intel64/ifort# optimized code  
+ifeq "$(CLUSTER_LC)" "omeep"
+   FC_NO_INSTR      = /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpif90
+   FC      = $(PREP) $(FC_NO_INSTR)
+   FFLAGS  = -O2 -debug all -m64  -fc=/opt/intel/compilers_and_libraries/linux/bin/intel64/ifort# optimized code  
 #   FFLAGS  = -O2 -m64  -fpp # optimized code
 #   FFLAGS =  -fpp  -m64 -warn all -check  -traceback -fpe0   -stand f03 -fstack-security-check # for debugging code
-   CC      = /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpicc 
+   CC_NO_INSTR      = /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpicc
+#   CC      = $(PREP) $(CC_NO_INSTR)
+   CC      = $(CC_NO_INSTR)
    CFLAGS  = -O2 -m64 
    # You only need these commands if you are compiling the Metis and SuperLU libs in MARE2DEM/Source/SuperLU and /Metis:
    ARCH = /opt/intel/compilers_and_libraries/linux/bin/intel64/xiar  # use this with the intel icc compiler and optimization -O2 or faster
@@ -224,7 +227,7 @@ endif
   
 ifeq "$(CLUSTER)" "lonestar"
     MARE2DEM: buildMARE2DEM
-else ifeq "$(CLUSTER)" "macpro"
+else ifeq "$(CLUSTER)" "omeep"
     MARE2DEM: buildMARE2DEM
 else ifeq "$(CLUSTER)" "triton"
     MARE2DEM: buildMARE2DEM  
@@ -247,7 +250,7 @@ checkCLUSTERarg:
 	@printf "    Usage: make CLUSTER=<myclustername>   \n\n";
 	@printf "    Currently supported clusters: \n\n"; 
 	@printf "        $ make CLUSTER=tscc    \n";
-	@printf "        $ make CLUSTER=macpro  \n";
+	@printf "        $ make CLUSTER=omeep  \n";
 	@printf "        $ make CLUSTER=lonestar    \n";
 	@printf "        $ make CLUSTER=triton    \n";
 	@printf "        $ make CLUSTER=dual      \n";
@@ -292,8 +295,8 @@ clean_scalapack:
 $(LIBSUPERLU): 
 	@printf "#\n#\n# Making SuperLU Sparse Linear Solver Library: \n#\n#\n"; \
 	cd $(SUPERLU_dir); \
-	make superlulib CC=$(CC) CFLAGS='$(CFLAGS)' \
-	FORTRAN=$(FC) FFLAGS='$(FFLAGS)' CDEFS=$(SUPERLU_CDEFS) BLASDEF=$(BLASDEF) \
+	make superlulib CC=$(CC_NO_INSTR) CFLAGS='$(CFLAGS)' \
+	FORTRAN=$(FC_NO_INSTR) FFLAGS='$(FFLAGS)' CDEFS=$(SUPERLU_CDEFS) BLASDEF=$(BLASDEF) \
 	ARCH=$(ARCH) ARCHFLAGS=$(ARCHFLAGS) RANLIB=$(RANLIB); cd $(CURDIR);
 
 # 
@@ -302,7 +305,7 @@ $(LIBSUPERLU):
 $(LIBMETIS):
 	@printf "#\n#\n# Making Metis Graph Partitioning Library: \n#\n#\n"; \
 	cd $(METIS_dir); \
-	make default CC=$(CC) OPTFLAGS='$(CFLAGS)' AR=$(ARMETIS)  RANLIB=$(RANLIB); cd $(CURDIR);
+	make default CC=$(CC_NO_INSTR) OPTFLAGS='$(CFLAGS)' AR=$(ARMETIS)  RANLIB=$(RANLIB); cd $(CURDIR);
 
 # 
 # Suitesparse UMFPack Build:
@@ -310,8 +313,8 @@ $(LIBMETIS):
 $(LIBUMF):  
 	@printf "#\n#\n# Making UMFPack Sparse Linear Solver Library: \n#\n#\n"; \
 	cd $(UMFdir);\
-	make CC=$(CC) CFLAGS='$(CFLAGS)' \
-	F77=$(FC) F77FLAGS='$(FFLAGS)'  BLAS='$(BLASLIB)' \
+	make CC=$(CC_NO_INSTR) CFLAGS='$(CFLAGS)' \
+	F77=$(FC_NO_INSTR) F77FLAGS='$(FFLAGS)'  BLAS='$(BLASLIB)' \
 	AR='$(ARUMF)'  RANLIB=$(RANLIB) METIS=$(PWD)/$(LIBMETIS) METIS_PATH=$(PWD)/$(METIS_dir);\
 	cd $(CURDIR);
 
@@ -321,8 +324,8 @@ $(LIBUMF):
 $(LIBSCALAPACK):
 	@printf "#\n#\n# Making ScaLAPACK Library: \n#\n#\n"; \
 	cd $(SCALAPACK_dir); \
-	make lib CC=$(CC) CCFLAGS='$(CFLAGS)' \
-	FC=$(FC) FCFLAGS='$(FFLAGS)'  CDEFS=$(SUPERLU_CDEFS) \
+	make lib CC=$(CC_NO_INSTR) CCFLAGS='$(CFLAGS)' \
+	FC=$(FC_NO_INSTR) FCFLAGS='$(FFLAGS)'  CDEFS=$(SUPERLU_CDEFS) \
 	ARCH=$(ARCH) ARCHFLAGS=$(ARCHFLAGS) RANLIB=$(RANLIB); cd $(CURDIR);
 
 
