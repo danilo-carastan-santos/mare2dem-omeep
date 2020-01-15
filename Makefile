@@ -32,17 +32,17 @@ CLUSTER_LC := $(shell echo $(CLUSTER) | tr A-Z a-z)
 # macpro with Intel Compilers:
 # 
 ifeq "$(CLUSTER_LC)" "omeep"
-   FC_NO_INSTR      = /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpif90
+   FC_NO_INSTR      = $(INTEL_PATH)/compilers_and_libraries/linux/mpi/intel64/bin/mpif90
    FC      = $(PREP) $(FC_NO_INSTR)
-   FFLAGS  = -O2 -debug all -m64  -fc=/opt/intel/compilers_and_libraries/linux/bin/intel64/ifort# optimized code  
+   FFLAGS  = -O2 -debug all -m64  -fc=$(INTEL_PATH)/compilers_and_libraries/linux/bin/intel64/ifort# optimized code  
 #   FFLAGS  = -O2 -m64  -fpp # optimized code
 #   FFLAGS =  -fpp  -m64 -warn all -check  -traceback -fpe0   -stand f03 -fstack-security-check # for debugging code
-   CC_NO_INSTR      = /opt/intel/compilers_and_libraries/linux/mpi/intel64/bin/mpicc
+   CC_NO_INSTR      = $(INTEL_PATH)/compilers_and_libraries/linux/mpi/intel64/bin/mpicc
 #   CC      = $(PREP) $(CC_NO_INSTR)
    CC      = $(CC_NO_INSTR)
    CFLAGS  = -O2 -m64 
    # You only need these commands if you are compiling the Metis and SuperLU libs in MARE2DEM/Source/SuperLU and /Metis:
-   ARCH = /opt/intel/compilers_and_libraries/linux/bin/intel64/xiar  # use this with the intel icc compiler and optimization -O2 or faster
+   ARCH = $(INTEL_PATH)/compilers_and_libraries/linux/bin/intel64/xiar  # use this with the intel icc compiler and optimization -O2 or faster
    ARCHFLAGS = ruv
    RANLIB = ranlib
    BLASDEF = -DUSE_VENDOR_BLAS  
