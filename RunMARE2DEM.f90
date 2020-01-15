@@ -244,7 +244,10 @@
             !
             ! Check the convergence flag:
             ! 
-            if (convergenceFlag > 1) then
+            ! Compute a single Occam iteration for profiling purposes, the below line is the
+            ! orginal if statement
+            !if (convergenceFlag > 1) then
+            if (.true.) then
                 exit
             end if
 
